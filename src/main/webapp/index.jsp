@@ -8,7 +8,7 @@
     <title>SignIn</title>
 </head>
 <body>
-<a href="/SignInForm">Sign In</a>
+<a href="/LogInForm">Log In</a>
 <form action="/SignInForm" method="get">
     <button type="submit">Sign In</button>
 </form>

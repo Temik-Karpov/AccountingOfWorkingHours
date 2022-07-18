@@ -35,26 +35,42 @@ public final class PersonDAO {
         switch (person.getPost_())
         {
             case "Administrator":
-                table = "Administrator";
+                table = "Administrators";
                 break;
             case "Director":
-                table = "Director";
+                table = "Directors";
                 break;
             case "CoWorker":
-                table = "CoWorker";
+                table = "CoWorkers";
                 break;
         }
 
         try
         {
             Statement statement = connection.createStatement();
-            String SQL = "INSERT INTO " + table + " (FIO, Post, Management, Department, Email, Phone) VALUES('" + person.getFIO_() + "','" + person.getPost_() +
+            String SQL = "INSERT INTO " + table + " (FIO, Post, Management, Department, Email, Phone, Password) VALUES('" + person.getFIO_() + "','" + person.getPost_() +
                     "','" + person.getManagement_() + "','" + person.getDepartment_() + "','" + person.getEmail_() +
-                    "','" + person.getPhone_() + "')";
+                    "','" + person.getPhone_() + "','" + person.getPassword_() + "')";
             statement.executeUpdate(SQL);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
     }
 
+    public boolean checkPassword(String email, String password) throws SQLException {
+        ResultSet rs = null;
+        try
+        {
+            Statement statement = connection.createStatement();
+            String SQL = "SELECT password FROM administrators WHERE email = '" + email + "'";
+            rs = statement.executeQuery(SQL);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        if(rs != null)
+        {
+            return true;
+        }
+       return false;
+    }
 }
