@@ -8,8 +8,9 @@ public final class Person {
     String department_;
     String email_;
     String phone_;
+    String password_;
 
-    public Person(String FIO, String post, String management, String department, String email, String phone)
+    public Person(String FIO, String post, String management, String department, String email, String phone, String password)
     {
         this.department_ =department;
         this.email_ = email;
@@ -17,6 +18,7 @@ public final class Person {
         this.management_ = management;
         this.phone_ = phone;
         this.post_ = post;
+        this.password_ = password;
     }
 
     public String getEmail_() {
@@ -45,5 +47,9 @@ public final class Person {
 
     public String getPost_() {
         return post_;
+    }
+
+    public String getPassword_() {
+        return password_;
     }
 }

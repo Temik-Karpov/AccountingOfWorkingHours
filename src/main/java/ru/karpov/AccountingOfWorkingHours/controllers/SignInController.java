@@ -17,6 +17,13 @@ public class SignInController {
 
     private MailSender mailSender;
 
+    private PersonDAO personDAO;
+
+    @Autowired
+    public void setPersonDAO(PersonDAO personDAO) {
+        this.personDAO = personDAO;
+    }
+
     @Autowired
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
@@ -32,13 +39,20 @@ public class SignInController {
     public String passwordForm(@RequestParam("FIO") String FIO, @RequestParam("post") String post,
                                @RequestParam("management") String management, @RequestParam("department") String department,
                                @RequestParam("email") String email, @RequestParam("number") String number) throws SQLException {
-        PersonDAO DAO_ = new PersonDAO();
-        Person person = new Person(FIO, post, management, department, email, number);
-        DAO_.save(person);
-        mailSender.send(person.getEmail_(), "Password", "Your password is " + UUID.randomUUID().toString());
+        String password = UUID.randomUUID().toString();
+        Person person = new Person(FIO, post, management, department, email, number, password);
+        personDAO.save(person);
+        mailSender.send(person.getEmail_(), "Password", "Your password is " + password);
         return "password-form";
     }
 
-
-
+    @PostMapping("/LogInForm")
+    public String logInFrom(@RequestParam("email") String email,
+                            @RequestParam("password") String password) throws SQLException {
+        if(personDAO.checkPassword(email, password))
+        {
+            return "work-page";
+        }
+        return "password-form";
+    }
 }
