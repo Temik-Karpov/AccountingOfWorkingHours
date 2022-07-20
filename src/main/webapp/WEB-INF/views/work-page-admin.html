@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p th:if="${notConfirmedWorkers.size() == 0}">There is no not confirmed workers!</p>
+<tr th:unless="${notConfirmedWorkers.size() == 0}" th:each="workers : ${notConfirmedWorkers}">
+    <td th:text="${workers.getId_()}"></td><br>
+    <td th:text="${workers.getFIO_()}"></td><br>
+    <td th:text="${workers.getPost_()}"></td><br>
+    <td th:text="${workers.getDepartment_()}"></td><br>
+    <td th:text="${workers.getManagement_()}"></td><br>
+    <td th:text="${workers.getEmail_()}"></td><br>
+    <td th:text="${workers.getPhone_()}"></td><br>
+    <td>---------------------------------</td>
+</tr>
+<form th:unless="${notConfirmedWorkers.size() == 0}" method="post" action="/confirmWorker">
+    <input type="number" id="idWorker" name="idWorker"><br>
+    <button type="submit">Confirm worker</button>
+</form>
+</body>
+</html>

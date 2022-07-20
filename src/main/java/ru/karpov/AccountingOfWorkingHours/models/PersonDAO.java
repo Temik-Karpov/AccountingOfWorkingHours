@@ -3,6 +3,7 @@ package ru.karpov.AccountingOfWorkingHours.models;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 @Repository
 public final class PersonDAO {
@@ -10,6 +11,7 @@ public final class PersonDAO {
     private static final String URL = "jdbc:postgresql://localhost:5432/AccountingOfWorkingHours";
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "TemikPos12";
+    private ResultSet rs = null;
 
     private static Connection connection;
 
@@ -29,48 +31,109 @@ public final class PersonDAO {
     public PersonDAO(){
     }
 
-    public void save(Person person)
+    public void save(Worker worker)
     {
-        String table = null;
-        switch (person.getPost_())
-        {
-            case "Administrator":
-                table = "Administrators";
-                break;
-            case "Director":
-                table = "Directors";
-                break;
-            case "CoWorker":
-                table = "CoWorkers";
-                break;
-        }
-
         try
         {
-            Statement statement = connection.createStatement();
-            String SQL = "INSERT INTO " + table + " (FIO, Post, Management, Department, Email, Phone, Password) VALUES('" + person.getFIO_() + "','" + person.getPost_() +
-                    "','" + person.getManagement_() + "','" + person.getDepartment_() + "','" + person.getEmail_() +
-                    "','" + person.getPhone_() + "','" + person.getPassword_() + "')";
-            statement.executeUpdate(SQL);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM workers " +
+                    "WHERE email = ?");
+            rs = null;
+            preparedStatement.setString(1, worker.getEmail_());
+            rs = preparedStatement.executeQuery();
+            preparedStatement = connection.prepareStatement("INSERT INTO workers (FIO, Post, Department, Management," +
+                    " Email, Phone, Password, isConfirm) VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+            preparedStatement.setString(1, worker.getFIO_());
+            preparedStatement.setString(2, worker.getPost_());
+            preparedStatement.setString(3, worker.getDepartment_());
+            preparedStatement.setString(4, worker.getManagement_());
+            preparedStatement.setString(5, worker.getEmail_());
+            preparedStatement.setString(6, worker.getPhone_());
+            preparedStatement.setString(7, worker.getPassword_());
+            preparedStatement.setBoolean(8, false);
+            preparedStatement.executeUpdate();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
     }
 
-    public boolean checkPassword(String email, String password) throws SQLException {
-        ResultSet rs = null;
+    public boolean checkPassword(final String email, final String password) throws SQLException {
         try
         {
-            Statement statement = connection.createStatement();
-            String SQL = "SELECT password FROM administrators WHERE email = '" + email + "'";
-            rs = statement.executeQuery(SQL);
+            final PreparedStatement preparedStatement = connection.prepareStatement("SELECT password, isconfirm " +
+                    "FROM workers WHERE email = ?");
+            rs = null;
+            preparedStatement.setString(1, email);
+            rs = preparedStatement.executeQuery();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
         if(rs != null)
         {
-            return true;
+            while(rs.next()) {
+                final String passwordDb = rs.getString(1);
+                final boolean confirm = rs.getBoolean(2);
+                if (passwordDb.equals(password) && confirm) {
+                    return true;
+                } else {
+                    return false;   //Валидация: неверный пароль
+                }
+            }
         }
-       return false;
+       return false;    //Валидация: незарегестрированы
+    }
+
+    public String identifyPerson(final String email) throws SQLException {
+        try
+        {
+            final PreparedStatement preparedStatement = connection.prepareStatement("SELECT post FROM workers " +
+                    "WHERE email = ?");
+            preparedStatement.setString(1, email);
+            rs = preparedStatement.executeQuery();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        if(rs != null)
+        {
+            while(rs.next()) {
+                return rs.getString(1);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Worker> getNotConfirmedWorkers() throws SQLException {
+        final ArrayList<Worker> notConfirmedWorkers = new ArrayList<>();
+        try
+        {
+            final PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM workers " +
+                    "WHERE isconfirm = ?");
+            preparedStatement.setBoolean(1, false);
+            rs = preparedStatement.executeQuery();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        while(rs.next())
+        {
+            final Worker worker = new Worker(rs.getString(2), rs.getString(3),
+                    rs.getString(4), rs.getString(5), rs.getString(6),
+                    rs.getString(7), rs.getString(8));
+            worker.setId_(rs.getInt(1));
+            notConfirmedWorkers.add(worker);
+        }
+        return notConfirmedWorkers;
+    }
+
+    public void confirmWorker(int idWorker)
+    {
+        try
+        {
+            final PreparedStatement preparedStatement = connection.prepareStatement("UPDATE workers SET " +
+                    "isconfirm = ? WHERE worker_id = ?");
+            preparedStatement.setBoolean(1, true);
+            preparedStatement.setInt(2, idWorker);
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 }

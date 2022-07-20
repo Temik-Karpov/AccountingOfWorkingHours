@@ -1,6 +1,6 @@
 package ru.karpov.AccountingOfWorkingHours.models;
 
-public final class Person {
+public final class Worker {
     int id_;
     String FIO_;
     String post_;
@@ -10,9 +10,9 @@ public final class Person {
     String phone_;
     String password_;
 
-    public Person(String FIO, String post, String management, String department, String email, String phone, String password)
+    public Worker(String FIO, String post, String management, String department, String email, String phone, String password)
     {
-        this.department_ =department;
+        this.department_ = department;
         this.email_ = email;
         this.FIO_ = FIO;
         this.management_ = management;
@@ -51,5 +51,9 @@ public final class Person {
 
     public String getPassword_() {
         return password_;
+    }
+
+    public void setId_(final int id_) {
+        this.id_ = id_;
     }
 }
