@@ -10,7 +10,8 @@ public final class Worker {
     String phone_;
     String password_;
 
-    public Worker(String FIO, String post, String management, String department, String email, String phone, String password)
+    public Worker(final String FIO, final String post, final String management, final String department,
+                  final String email, final String phone, final String password)
     {
         this.department_ = department;
         this.email_ = email;

@@ -1,5 +1,6 @@
 package ru.karpov.AccountingOfWorkingHours.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -12,6 +13,12 @@ public final class PersonDAO {
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "TemikPos12";
     private ResultSet rs = null;
+    private MailSender mailSender;
+
+    @Autowired
+    public void setMailSender(final MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     private static Connection connection;
 
@@ -123,15 +130,23 @@ public final class PersonDAO {
         return notConfirmedWorkers;
     }
 
-    public void confirmWorker(int idWorker)
+    public void confirmWorker(final int idWorker)
     {
         try
         {
-            final PreparedStatement preparedStatement = connection.prepareStatement("UPDATE workers SET " +
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE workers SET " +
                     "isconfirm = ? WHERE worker_id = ?");
             preparedStatement.setBoolean(1, true);
             preparedStatement.setInt(2, idWorker);
             preparedStatement.executeUpdate();
+            preparedStatement = connection.prepareStatement("SELECT email, password FROM workers " +
+                    "WHERE worker_id = ?");
+            preparedStatement.setInt(1, idWorker);
+            rs = preparedStatement.executeQuery();
+            while(rs.next())
+            {
+                mailSender.send(rs.getString(1), "Password", "Your password is " + rs.getString(2));
+            }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }

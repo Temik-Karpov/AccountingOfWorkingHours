@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-Work-page!!!
+<form method="post" action="/StartDay">
+    <input type="text" name="date" id="date"><br>
+    <input type="text" name="time" id="time"><br>
+    <input type="text" name="text" id="text"><br>
+    <button th:if="${start == 1}" type="submit">Start day!</button>
+    <button th:unless="${start == 1}" type="submit">Finish day!</button>
+</form>
 </body>
 </html>

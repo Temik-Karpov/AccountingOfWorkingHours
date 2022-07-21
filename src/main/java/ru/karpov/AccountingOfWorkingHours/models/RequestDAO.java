@@ -31,7 +31,7 @@ public class RequestDAO {
 
     }
 
-    public void addRequestToTable(Request request)
+    public void addRequestToTable(final Request request)
     {
         try
         {
