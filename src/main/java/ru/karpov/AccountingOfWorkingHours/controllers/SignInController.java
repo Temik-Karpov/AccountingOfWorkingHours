@@ -3,9 +3,7 @@ package ru.karpov.AccountingOfWorkingHours.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.karpov.AccountingOfWorkingHours.models.PersonDAO;
 import ru.karpov.AccountingOfWorkingHours.models.Worker;
 
@@ -39,13 +37,13 @@ public class SignInController {
         final String password = UUID.randomUUID().toString();
         final Worker worker = new Worker(FIO, post, management, department, email, number, password);
         personDAO.save(worker);
-        return "password-form";
+        return "login";
     }
 
-    @GetMapping("/PasswordForm")
+    @GetMapping("/login")
     public String passwordForm()
     {
-        return "password-form";
+        return "login";
     }
 
     @PostMapping("/LogInForm")
@@ -64,6 +62,6 @@ public class SignInController {
                     return "work-page";
             }
         }
-        return "redirect:/password-form";
+        return "login";
     }
 }

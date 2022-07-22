@@ -8,7 +8,7 @@
     <title>SignIn</title>
 </head>
 <body>
-<a href="/PasswordForm">Log In</a>
+<a href="/login">Log In</a>
 <form action="/SignInForm" method="get">
     <button type="submit">Sign In</button>
 </form>
